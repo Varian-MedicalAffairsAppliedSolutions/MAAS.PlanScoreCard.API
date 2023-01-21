@@ -34,7 +34,6 @@ namespace PlanScoreCard.API.Extensions
         public void InputTemplate(ScoreTemplateModel template)
         {
             MetricText = PlanScoreCalculationServices.GetMetricTextFromTemplate(template);
-            SetInitialPlotParameters(template);
         }
         public void BuildPlanScoreFromTemplate(PlanSetup plan, ScoreTemplateModel template, int metricId, bool canBuildStructure)
         {
@@ -380,125 +379,9 @@ namespace PlanScoreCard.API.Extensions
                 scoreValue.Value = -1000;
             }
 
-            if (scoreValue.Value != -1000 && template.ScorePoints.Count() > 0)
-            {
-                //break scorepoints into 2 groups, before and after the variation.
-                //this one sets marker color.
-                //this method is changed to only show the marker.
-                bool checkCourse = false;
-                if (!String.IsNullOrEmpty(primaryPlanId) && !String.IsNullOrEmpty(primaryCourseId))
-                {
-                    checkCourse = (plan as PlanSetup).Course.Id == primaryCourseId;
-                }
-
-            }
             ScoreValues.Add(scoreValue);
 
-            if (!StructureId.Equals(TemplateStructureId, StringComparison.OrdinalIgnoreCase))//in the event that the above is unecessary
-            {
-                TemplateStructureVisibility = Visibility.Visible;//still show template structure Id if structure Id doesn't match.
-            }
-            else
-            {
-                TemplateStructureVisibility = Visibility.Hidden;
-            }
-            //CheckOutsideBounds();
-
-            if (ScoreValues.Count() > 1)
-            {
-                bStatsVis = true;
-                MaxScore = $"Max={ScoreValues.Max(x => x.Score):F2}";
-                ScoreMin = $"Min={ScoreValues.Min(x => x.Score):F2}";
-                ScoreMean = $"Mean={ScoreValues.Average(x => x.Score):F2}";
-            }
-            ScorePlotModel.InvalidatePlot(true);
         }
-
-        /// <summary>
-        /// Set up plot from template
-        /// </summary>
-        /// <param name="template">plot from template</param>
-        private void SetInitialPlotParameters(ScoreTemplateModel template)
-        {
-            //plotting 
-            if (template.ScorePoints.Count() > 1)
-            {
-                MinXValue = template.ScorePoints.Min(x => x.PointX);
-                MaxXValue = template.ScorePoints.Max(x => x.PointX);
-                //CheckOutsideBounds();
-                XAxisLabel = template.ScorePoints.Any(x => x.Variation) ?
-                    $"Variation @ {template.ScorePoints.FirstOrDefault(x => x.Variation).PointX}{template.OutputUnit}"
-                    : $"{((MetricTypeEnum)Enum.Parse(typeof(MetricTypeEnum), template.MetricType) == MetricTypeEnum.HomogeneityIndex ? MetricText : $"{MetricText.Split(' ').FirstOrDefault()} [{template.OutputUnit}]")}";
-            }
-            ScorePlotModel.Series.Clear();
-            ScorePlotModel.Axes.Add(new LinearAxis
-            {
-                Position = AxisPosition.Bottom,
-                IsAxisVisible = false,
-                //TicklineColor = OxyColors.Transparent,
-                //MajorTickSize = 0,
-                //MinorTickSize = 0,
-                //FontSize = 8,
-                //AxisTitleDistance = 0,
-                ////Minimum = template.ScorePoints.Min(x=>x.PointX)-0.1,
-                ////Maximum = template.ScorePoints.Max(x=>x.PointX)+0.1,
-                AbsoluteMinimum = template.ScorePoints.Count() > 1 ? template.ScorePoints.Min(x => x.PointX) : 0,
-                AbsoluteMaximum = template.ScorePoints.Count() > 1 ? template.ScorePoints.Max(x => x.PointX) : 1,
-                ////DataMinimum = template.ScorePoints.Min(x=>x.PointX),
-                ////DataMaximum = template.ScorePoints.Max(x=>x.PointX),
-                //MajorStep = template.ScorePoints.Max(x => x.PointX) - template.ScorePoints.Min(x => x.PointX),
-                //MinorStep = template.ScorePoints.Max(x => x.PointX) - template.ScorePoints.Min(x => x.PointX)
-            });
-            ScorePlotModel.Axes.Add(new LinearAxis
-            {
-                Position = AxisPosition.Left,
-                IsAxisVisible = false
-            });
-            ScorePlotModel.IsLegendVisible = false;
-            if (template.ScorePoints.Any(x => x.Variation))
-            {
-                var PointSeriesAbove = new LineSeries
-                {
-                    Color = OxyColors.Green
-                };
-                foreach (var spoint in template.ScorePoints.Where(x => x.Score >= template.ScorePoints.SingleOrDefault(y => y.Variation).Score).OrderBy(x => x.PointX))
-                {
-
-                    //add to the plot
-                    PointSeriesAbove.Points.Add(new DataPoint(spoint.PointX, spoint.Score));
-                }
-                ScorePlotModel.Series.Add(PointSeriesAbove);
-
-                var PointSeriesBelow = new LineSeries
-                {
-                    Color = OxyColors.Yellow
-                };
-                foreach (var spoint in template.ScorePoints.Where(x => x.Score <= template.ScorePoints.SingleOrDefault(y => y.Variation).Score).OrderBy(x => x.PointX))
-                {
-                    //add to the plot
-                    PointSeriesBelow.Points.Add(new DataPoint(spoint.PointX, spoint.Score));
-                }
-                ScorePlotModel.Series.Add(PointSeriesBelow);
-            }
-            else
-            {
-                //make it all green if there is no variation.
-                var PointSeriesAllGreen = new LineSeries
-                {
-                    Color = OxyColors.Green
-                };
-                foreach (var spoint in template.ScorePoints.OrderBy(x => x.PointX))
-                {
-                    //add to the plot
-                    PointSeriesAllGreen.Points.Add(new DataPoint(spoint.PointX, spoint.Score));
-                }
-                ScorePlotModel.Series.Add(PointSeriesAllGreen);
-            }
-            // ScorePlotModel.InvalidatePlot(true);
-        }
-
-
-
         /// <summary>
         /// Find structure based on templated structure model
         /// </summary>
