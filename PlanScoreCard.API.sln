@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanScoreCard.API", "PlanScoreCard.API\PlanScoreCard.API.csproj", "{701B72CB-767B-45ED-B3FE-0611AF44FF84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{701B72CB-767B-45ED-B3FE-0611AF44FF84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{701B72CB-767B-45ED-B3FE-0611AF44FF84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{701B72CB-767B-45ED-B3FE-0611AF44FF84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{701B72CB-767B-45ED-B3FE-0611AF44FF84}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {53D7082C-944D-46AA-A98F-33B689FF0FC9}
+	EndGlobalSection
+EndGlobal
