@@ -53,7 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core.cs" />
+    <Compile Include="ScoreCenter.cs" />
     <Compile Include="Extensions\PlanScoreModel.cs" />
     <Compile Include="Models\PatientPlanModel.cs" />
     <Compile Include="Models\PlanModel.cs" />

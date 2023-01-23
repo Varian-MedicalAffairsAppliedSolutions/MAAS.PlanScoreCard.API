@@ -37,6 +37,7 @@ namespace PlanScoreCard.API.Extensions
         }
         public void BuildPlanScoreFromTemplate(PlanSetup plan, ScoreTemplateModel template, int metricId, bool canBuildStructure)
         {
+            var _dvhResolution = 0.01;
             ScoreMax = template.ScorePoints.Count() == 0 ? -1000 : template.ScorePoints.Max(x => x.Score);
             string id = template.Structure?.StructureId;
             string code = template.Structure?.StructureCode;
@@ -142,7 +143,7 @@ namespace PlanScoreCard.API.Extensions
                     var body = plan.StructureSet.Structures.SingleOrDefault(x => x.DicomType == "EXTERNAL");
                     if (body == null)
                     {
-                        System.Windows.MessageBox.Show("No Single Body Structure Found");
+                        //System.Windows.MessageBox.Show("No Single Body Structure Found");
                         scoreValue.Value = ScoreMax = scoreValue.Score = -1000;
                         return;
                     }
@@ -176,7 +177,7 @@ namespace PlanScoreCard.API.Extensions
                     var body = plan.StructureSet.Structures.SingleOrDefault(x => x.DicomType == "EXTERNAL");
                     if (body == null)
                     {
-                        System.Windows.MessageBox.Show("No Single Body Structure Found");
+                        //System.Windows.MessageBox.Show("No Single Body Structure Found");
                         scoreValue.Value = ScoreMax = scoreValue.Score = -1000; return;
                     }
                     var dvh_body = PlanScoreCalculationServices.GetDVHForVolumeType(plan, template, body, _dvhResolution);
@@ -256,7 +257,7 @@ namespace PlanScoreCard.API.Extensions
                     var body = plan.StructureSet.Structures.SingleOrDefault(x => x.DicomType == "EXTERNAL");
                     if (body == null)
                     {
-                        System.Windows.MessageBox.Show("No single body structure found.");
+                        //System.Windows.MessageBox.Show("No single body structure found.");
                         scoreValue.Value = ScoreMax = scoreValue.Score = -1000; return;
                     }
                     //goahead and make the DVH absolute volume for conformity index (not saved in template). 
@@ -339,7 +340,7 @@ namespace PlanScoreCard.API.Extensions
                 {
                     if (String.IsNullOrEmpty(template.OutputUnit))
                     {
-                        MessageBox.Show($"No output unit for metric {template.MetricType} on {template.Structure.StructureId}");
+                        //MessageBox.Show($"No output unit for metric {template.MetricType} on {template.Structure.StructureId}");
                         scoreValue.Value = -1000;
                     }
                     else
@@ -424,7 +425,7 @@ namespace PlanScoreCard.API.Extensions
                 }
                 else if (structure.IsEmpty && autoGenerate && writeable && canBuildStructure)//generate structure if empty.
                 {
-                    var new_structure = StructureGenerationService.BuildStructureWithESAPI(_app, structure.Id, comment, true, plan, StructureDictionaryService);
+                    var new_structure = StructureGenerationService.BuildStructureWithESAPI(_app, structure.Id, comment, true, plan, canBuildStructure);
                     return new_structure;
                 }
                 else//return empty structure. 
@@ -437,7 +438,7 @@ namespace PlanScoreCard.API.Extensions
             //next check for structure on templateID.
             if (plan.StructureSet.Structures.Any(x => x.Id.Equals(templateId, StringComparison.OrdinalIgnoreCase)))
             {
-                bFromTemplate = true;
+                //bFromTemplate = true;
                 var structure = plan.StructureSet.Structures.FirstOrDefault(x => x.Id.Equals(templateId, StringComparison.OrdinalIgnoreCase));
 
                 if (structure != null && !structure.IsEmpty)
@@ -447,7 +448,7 @@ namespace PlanScoreCard.API.Extensions
                 }
                 else if (structure.IsEmpty && autoGenerate && writeable && canBuildStructure)//generate structure if empty.
                 {
-                    var new_structure = StructureGenerationService.BuildStructureWithESAPI(_app, structure.Id, comment, true, plan, StructureDictionaryService);
+                    var new_structure = StructureGenerationService.BuildStructureWithESAPI(_app, structure.Id, comment, true, plan, canBuildStructure);
                     return new_structure;
                 }
                 else//return empty structure. 
@@ -457,54 +458,6 @@ namespace PlanScoreCard.API.Extensions
                 }
 
             }
-            // SECOND: If exact match is not there, check to see if it is part of the Structure Dictionary
-            //check templateId against structure id. 
-            StructureDictionaryModel structureDictionary = StructureDictionaryService.StructureDictionary.FirstOrDefault(s => s.StructureID.ToLower().Equals(templateId.ToLower()));
-
-            // This means there was no direct match to a key in the structure 
-            /*if (structureDictionary == null)
-            {
-                // This checks to see if it is a structure
-                //check structure Id agains the template matches. 
-                string structureID = StructureDictionaryService.FindMatch(id);
-
-                if (!String.IsNullOrEmpty(structureID))
-                    structureDictionary = StructureDictionaryService.StructureDictionary.FirstOrDefault(s => s.StructureID.ToLower() == structureID.ToLower());
-            }*/
-
-            // This means that the template structure Id
-            if (structureDictionary != null)
-            {
-                // Get a collection of all acceptable Structures
-                List<string> acceptedStructures = new List<string>();
-                acceptedStructures.Add(structureDictionary.StructureID.ToLower());
-                if (structureDictionary.StructureSynonyms != null)
-                {
-                    acceptedStructures.AddRange(structureDictionary.StructureSynonyms.Select(s => s.ToLower()));
-                }
-
-                // Gets the Plan Structures
-                List<string> planStructrues = plan.StructureSet.Structures.Select(s => s.Id.ToLower()).ToList();
-
-                // Finds any matches between the PlanStructures and All Accepted StructIDs
-                Structure structure = null;
-                string matchedStructureID = planStructrues.Intersect(acceptedStructures).FirstOrDefault();
-                if (matchedStructureID != null)
-                {
-                    structure = plan.StructureSet.Structures.FirstOrDefault(s => s.Id.ToLower() == matchedStructureID.ToLower());
-                }
-
-                if (structure != null && !structure.IsEmpty)
-                {
-                    return structure;
-                }
-                else if (structure != null && structure.IsEmpty && autoGenerate && writeable && canBuildStructure)//generate structure if empty.
-                {
-                    var new_structure = StructureGenerationService.BuildStructureWithESAPI(_app, structure.Id, comment, true, plan, StructureDictionaryService);
-                    return new_structure;
-                }
-            }
-
             // See if you can find it based on just stucture Code
             if (code != null && code.ToLower() != "control" && code.ToLower() != "ptv" && code.ToLower() != "ctv" && code.ToLower() != "gtv")//do not try to match control structures, they will be mismatched
             {
@@ -517,7 +470,7 @@ namespace PlanScoreCard.API.Extensions
             // If no match, create it. 
             if (autoGenerate && writeable && !String.IsNullOrEmpty(comment) && canBuildStructure)
             {
-                var structure = StructureGenerationService.BuildStructureWithESAPI(_app, id, comment, false, plan, StructureDictionaryService);
+                var structure = StructureGenerationService.BuildStructureWithESAPI(_app, id, comment, false, plan, canBuildStructure);
                 return structure;
             }
 

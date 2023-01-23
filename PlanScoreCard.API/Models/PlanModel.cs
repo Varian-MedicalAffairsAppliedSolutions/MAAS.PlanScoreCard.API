@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using PlanScoreCard.API.ScoreCard.Models;
+using PlanScoreCard.API.Models.ScoreCard;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
