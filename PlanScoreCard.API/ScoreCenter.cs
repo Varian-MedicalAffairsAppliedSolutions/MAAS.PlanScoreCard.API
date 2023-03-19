@@ -104,6 +104,7 @@ namespace PlanScoreCard.API
                 psm.InputTemplate(metric);
                 psm.BuildPlanScoreFromTemplate(planSetup, metric, metricId, canBuildStructure);
                 planScores.Add(psm);
+                metricId++;
             }
             output = "Success";
             return planScores;
@@ -119,6 +120,7 @@ namespace PlanScoreCard.API
                 psm.InputTemplate(metric);
                 psm.BuildPlanScoreFromTemplate(plan, metric, metricId, canBuildStructure);
                 planScores.Add(psm);
+                metricId++;
             }
             output = "Success";
             return planScores;

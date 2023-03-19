@@ -25,6 +25,7 @@ namespace PlanScoreCard.API.Extensions
         public string MetricComment { get; set; }
         public string PrintComment { get; set; }
         public int MetricId { get; set; }
+        public ScoreTemplateModel InternalTemplate { get; set; }
         public ObservableCollection<ScoreValueModel> ScoreValues { get; set; }
         public PlanScoreModel(VMS.TPS.Common.Model.API.Application app)
         {
@@ -379,7 +380,7 @@ namespace PlanScoreCard.API.Extensions
                 scoreValue.Score = 0.0;
                 scoreValue.Value = -1000;
             }
-
+            scoreValue.StructureId = StructureId;
             ScoreValues.Add(scoreValue);
 
         }
