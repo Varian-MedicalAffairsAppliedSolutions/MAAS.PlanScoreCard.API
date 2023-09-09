@@ -88,6 +88,8 @@ namespace PlanScoreCard.API.Extensions
             }
             ScoreValueModel scoreValue = new ScoreValueModel();
             //scoreValue.bVisible = true;
+            //added variation to scorevalue. 
+            scoreValue.Variation = template.ScorePoints.Any(sp=>sp.Variation)?template.ScorePoints.FirstOrDefault(sp=>sp.Variation).Score:0.0;
             scoreValue.OutputUnit = template.OutputUnit;
             scoreValue.PlanId = plan.Id;
 
