@@ -55,6 +55,7 @@ The PlanScoreModel also has some methods to help in scoring the plan.
 - InputTemplate – Sets the metric text of the template for each metric. This is an internal method that should be private in an upcoming release.
 - BuildPlanScoreFromTemplate – Builds the plan template from plan and template.
 - GetStructureFromTemplate - Uses an override id (matchedId) (1) or the template Id (2) to try to find a match for the structure. If the code allows for the automated generation of a structure, then the structure generation service will build the structure using the StructureGenerationService in the API.
+- NormPlan - Find the optimal normalization value that results in the highest score result.
 
 <br>
 <br>
