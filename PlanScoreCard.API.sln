@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanScoreCard.API", "PlanScoreCard.API\PlanScoreCard.API.csproj", "{701B72CB-767B-45ED-B3FE-0611AF44FF84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanScoreCard.API.Client", "PlanScoreCard.API.Client\PlanScoreCard.API.Client.csproj", "{AC9BA92E-7855-4F1A-B38B-EDCCF4EAA25D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{701B72CB-767B-45ED-B3FE-0611AF44FF84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{701B72CB-767B-45ED-B3FE-0611AF44FF84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{701B72CB-767B-45ED-B3FE-0611AF44FF84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC9BA92E-7855-4F1A-B38B-EDCCF4EAA25D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC9BA92E-7855-4F1A-B38B-EDCCF4EAA25D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC9BA92E-7855-4F1A-B38B-EDCCF4EAA25D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC9BA92E-7855-4F1A-B38B-EDCCF4EAA25D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

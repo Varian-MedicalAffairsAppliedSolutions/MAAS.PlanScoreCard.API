@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{701B72CB-767B-45ED-B3FE-0611AF44FF84}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PlanScoreCard.API</RootNamespace>
-    <AssemblyName>PlanScoreCard.API</AssemblyName>
+    <ProjectGuid>{AC9BA92E-7855-4F1A-B38B-EDCCF4EAA25D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PlanScoreCard.API.Client</RootNamespace>
+    <AssemblyName>PlanScoreCard.API.Client</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,9 +22,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,10 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,24 +51,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\NormalizationService.cs" />
-    <Compile Include="Models\Scorecard\PlanScoreColorModel.cs" />
-    <Compile Include="ScoreCenter.cs" />
-    <Compile Include="Extensions\PlanScoreModel.cs" />
-    <Compile Include="Models\PatientPlanModel.cs" />
-    <Compile Include="Models\PlanModel.cs" />
-    <Compile Include="Models\Scorecard\InternalTemplateModel.cs" />
-    <Compile Include="Models\Scorecard\MetricTypeEnum.cs" />
-    <Compile Include="Models\Scorecard\ScorePointInternalModel.cs" />
-    <Compile Include="Models\Scorecard\ScoreTemplateModel.cs" />
-    <Compile Include="Models\Scorecard\ScoreValueModel.cs" />
-    <Compile Include="Models\Scorecard\StructureModel.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\PlanScoreCalculationServices.cs" />
-    <Compile Include="Services\StructureGenerationService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PlanScoreCard.API\PlanScoreCard.API.csproj">
+      <Project>{701b72cb-767b-45ed-b3fe-0611af44ff84}</Project>
+      <Name>PlanScoreCard.API</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

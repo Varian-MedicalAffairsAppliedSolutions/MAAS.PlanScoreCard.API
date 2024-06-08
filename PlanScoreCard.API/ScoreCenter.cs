@@ -2,6 +2,7 @@
 using PlanScoreCard.API.Extensions;
 using PlanScoreCard.API.Models;
 using PlanScoreCard.API.Models.ScoreCard;
+using PlanScoreCard.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,21 +16,18 @@ namespace PlanScoreCard.API
     public class ScoreCenter
     {
         private Application _Application;
-        public ScoreCenter(Application application)
+        private bool _isWriteable;
+        private PlanModel _planModel;
+        private InternalTemplateModel _currentTemplate;
+        public ScoreCenter(Application application, bool isWriteable)
         {
             _Application = application;
+            _isWriteable = isWriteable;
         }
-        //public Core()
-        //{
-        //    _Application = Application.CreateApplication();
-        //}
-        ///// <summary>
-        ///// Dispose of ESAPI application object
-        ///// </summary>
-        //public void DisposeApplication()
-        //{
-        //    _Application.Dispose();
-        //}
+        public void SetPlanModel(PlanSetup plan)
+        {
+            _planModel = new PlanModel(plan);
+        }
         /// <summary>
         /// Convert JSON template into a TemplateObject.
         /// </summary>
@@ -42,6 +40,7 @@ namespace PlanScoreCard.API
             {
                 InternalTemplateModel template = JsonConvert.DeserializeObject<InternalTemplateModel>(File.ReadAllText(fileName));
                 returnDetails = "Success";
+                _currentTemplate = template;
                 return template;
             }
             catch (Exception ex)
@@ -86,19 +85,19 @@ namespace PlanScoreCard.API
                 //throw new ApplicationException(e.Message);
             }
         }
-        public List<PlanScoreModel> ScorePlan(PlanModel plan, InternalTemplateModel scorecard, bool canBuildStructure, out string output)
+        public List<PlanScoreModel> ScorePlan(bool canBuildStructure, out string output)
         {
             //get plan setup from plan.
             _Application.ClosePatient();
-            Patient patient = _Application.OpenPatientById(plan.PatientId);
-            if(patient == null) { output = $"No patient with Id {plan.PatientId}";return null; }
-            Course course = patient.Courses.FirstOrDefault(c => c.Id.Equals(plan.CourseId));
-            if(course == null) { output = $"No course with Id {plan.CourseId}"; return null; }
-            PlanSetup planSetup = course.PlanSetups.FirstOrDefault(ps => ps.Id.Equals(plan.PlanId));
-            if(plan == null) { output = $"No Plan with Id {plan.PlanId}"; return null; }
+            Patient patient = _Application.OpenPatientById(_planModel.PatientId);
+            if (patient == null) { output = $"No patient with Id {_planModel.PatientId}"; return null; }
+            Course course = patient.Courses.FirstOrDefault(c => c.Id.Equals(_planModel.CourseId));
+            if (course == null) { output = $"No course with Id {_planModel.CourseId}"; return null; }
+            PlanSetup planSetup = course.PlanSetups.FirstOrDefault(ps => ps.Id.Equals(_planModel.PlanId));
+            if (_planModel == null) { output = $"No Plan with Id {_planModel.PlanId}"; return null; }
             List<PlanScoreModel> planScores = new List<PlanScoreModel>();
             int metricId = 0;
-            foreach(var metric in scorecard.ScoreTemplates)
+            foreach (var metric in _currentTemplate.ScoreTemplates)
             {
                 PlanScoreModel psm = new PlanScoreModel(_Application);
                 psm.InputTemplate(metric);
@@ -109,12 +108,19 @@ namespace PlanScoreCard.API
             output = "Success";
             return planScores;
         }
-        public List<PlanScoreModel> ScorePlan(PlanSetup plan, InternalTemplateModel scorecard, bool canBuildStructure, out string output)
+        /// <summary>
+        /// Score Plan with Plan Setup (good if you don't want to take the step to convert from the Plan Model)
+        /// </summary>
+        /// <param name="plan">Plan Setup to score</param>
+        /// <param name="canBuildStructure">Build optimization structure (requires write-enabled and approval)</param>
+        /// <param name="output">Return string</param>
+        /// <returns>List of Plan Score Models (scores are in the ScoreValues property</returns>
+        public List<PlanScoreModel> ScorePlan(PlanSetup plan, bool canBuildStructure, out string output)
         {
             //get plan setup from plan.
             List<PlanScoreModel> planScores = new List<PlanScoreModel>();
             int metricId = 0;
-            foreach (var metric in scorecard.ScoreTemplates)
+            foreach (var metric in _currentTemplate.ScoreTemplates)
             {
                 PlanScoreModel psm = new PlanScoreModel(_Application);
                 psm.InputTemplate(metric);
@@ -124,6 +130,20 @@ namespace PlanScoreCard.API
             }
             output = "Success";
             return planScores;
+        }
+        /// <summary>
+        /// Normalize score to achieve maxixmum dose.
+        /// </summary>
+        /// <param name="normIndex">Allow normalization to score Index parameters (i.e. HI, CI,...). Sometimes poor plans from normalizating to these metrics</param>
+        /// <param name="savePlan">Allow new plan to be saved (true). Find normalization but don't actually save plan (false)</param>
+        /// <returns>Plan Model of newly created plan.</returns>
+        public PlanModel NormPlan(bool normIndex, bool savePlan)
+        {
+            if (_planModel == null) { Console.WriteLine("No Plan model set"); return null; }
+            if (_currentTemplate == null) { Console.WriteLine("No plan template set"); return null; }
+            var normService = new NormalizationService(_Application, _planModel, _currentTemplate.ScoreTemplates, normIndex, savePlan);
+            var planModel = normService.GetPlan();
+            return planModel;
         }
     }
 }
